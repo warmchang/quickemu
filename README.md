@@ -5,7 +5,7 @@
 
 **Quickly create and run optimised Windows, macOS and Linux virtual machines:**
 
-**Made with 💝 for <img src=".github/tux.png" align="top" width="24" alt="Tux (Linux)"/>**
+**Made with 💝 for <img src=".github/tux.png" align="top" width="24" alt="Tux (Linux)"/> & <img src=".github/apple.png" align="top" width="24" alt="Apple (macOS)"/>**
 </div>
 
 <p align="center">
@@ -37,9 +37,10 @@ required to run the virtual machines.
 
 # Features
 
+- Host support for **Linux and macOS**
 - **macOS** Sonoma, Ventura, Monterey, Big Sur, Catalina & Mojave
 - **Windows** 10 and 11 including TPM 2.0
-- **Windows Server** 2022 2019 2016 2012-r2
+- **Windows Server** 2022 2019 2016
 - [Ubuntu](https://ubuntu.com/desktop) and all the **[official Ubuntu
   flavours](https://ubuntu.com/download/flavours)**
 - **Nearly 1000 operating system editions are supported!**
@@ -60,6 +61,16 @@ required to run the virtual machines.
 - Braille support
 - EFI (with or without SecureBoot) and Legacy BIOS boot
 
+## As featured on [Linux Matters](https://linuxmatters.sh) podcast!
+
+The presenters of Linux Matters 🐧🎙️ are the creators of each of the principle Quickemu projects. We discussed Quickemu's 2024 reboot in [Episode 30 - Quickemu Rising From the Bashes](https://linuxmatters.sh/30). <!-- and in [Episode 32 - Quick, quicker, quickest](https://linuxmatters.sh/32) [Martin](https://github.com/flexiondotorg) unveils macOS host support for [**Quickemu**](https://github.com/quickemu-project/quickemu), [Mark](https://github.com/marxjohnson) explains the origins of the [**Quickgui**](https://github.com/quickemu-project/quickgui) desktop app and upcoming improvements, and [Alan](https://github.com/popey) debuts [**Quicktest**](https://github.com/quickemu-project/quicktest); a framework for automatically testing operating systems via Quickemu -->
+
+<div align="center">
+  <a href="https://linuxmatters.sh" target="_blank"><img src="https://github.com/wimpysworld/nix-config/raw/main/.github/screenshots/linuxmatters.png" alt="Linux Matters Podcast"/></a>
+  <br />
+  <em>Linux Matters Podcast</em>
+</div>
+
 # Quick start
 
 [Once Quickemu is installed](https://github.com/quickemu-project/quickemu/wiki/01-Installation), there are two simple steps to create and run a virtual machine:
@@ -67,13 +78,13 @@ required to run the virtual machines.
 - `quickget` automatically downloads the ISO image for the operating system you want to run and creates a configuration file for the virtual machine.
 
 ``` shell
-quickget nixos unstable
+quickget nixos unstable minimal
 ```
 
 - `quickemu` starts the virtual machine using the configuration file created by `quickget`.
 
 ``` shell
-quickemu --vm nixos-unstable.conf
+quickemu --vm nixos-unstable-minimal.conf
 ```
 
 Execute `quickget` (with no arguments) to see a list of all the supported operating systems.
@@ -98,15 +109,3 @@ The wiki describes how to get up and running with Quickemu and also covers more 
 - [**Advanced quickget features**](https://github.com/quickemu-project/quickemu/wiki/06-Advanced-quickget-features) 🤓
 - [**Alternative frontends**](https://github.com/quickemu-project/quickemu/wiki/07-Alternative-frontends) 🧑‍💻
 - [**References**](https://github.com/quickemu-project/quickemu/wiki/08-References) 📚️
-
-# Contributing
-
-We welcome contributions to Quickemu.
-
-- Help other Quickemu users by answering questions in the [Quickemu Discussions](https://github.com/quickemu-project/quickemu/discussions) 🛟
-- Improve the documentation in [this README](https://github.com/quickemu-project/quickemu/edit/master/README.md) and the [Quickemu Wiki](https://github.com/quickemu-project/quickemu/wiki) 📖
-- File bug reports and feature requests in the [Quickemu Issues](https://github.com/quickemu-project/quickemu/issues) 📁
-- Submit [Quickemu Pull requests](https://github.com/quickemu-project/quickemu/pulls) to fix bugs 🐞 or add new features ✨
-  - Follow our [guide to adding a new OS to quickget](https://github.com/quickemu-project/quickemu/wiki/06-Advanced-quickget-features#adding-a-new-os-to-quickget)
-  - Commit messages must [conform to the Conventional Commits specification](https://www.conventionalcommits.org/).
-- [Sponsor the project](https://github.com/sponsors/flexiondotorg) 💖

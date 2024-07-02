@@ -18,7 +18,7 @@ Depends:
  genisoimage,
  jq,
  mesa-utils,
- pciutils
+ pciutils,
  procps,
  python3-minimal,
  qemu-system (>= 6.0),
@@ -27,6 +27,7 @@ Depends:
  swtpm,
  usbutils,
  util-linux,
+ uuid-runtime,
  x11-xserver-utils,
  xdg-user-dirs,
  zsync,

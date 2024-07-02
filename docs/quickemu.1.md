@@ -1,6 +1,6 @@
 ---
 author: Martin Wimpress
-date: May 26, 2024
+date: June 29, 2024
 footer: quickemu
 header: Quickemu User Manual
 section: 1
@@ -172,6 +172,7 @@ Haiku, KolibriOS, OpenIndiana, ReactOS, and more.
 
 # Features
 
+- Host support for **Linux and macOS**
 - **macOS** Sonoma, Ventura, Monterey, Big Sur, Catalina & Mojave
 - **Windows** 10 and 11 including TPM 2.0
 - **Windows Server** 2022 2019 2016 2012-r2
@@ -194,6 +195,21 @@ Haiku, KolibriOS, OpenIndiana, ReactOS, and more.
 - Braille support
 - EFI (with or without SecureBoot) and Legacy BIOS boot
 
+## As featured on [Linux Matters](https://linuxmatters.sh) podcast!
+
+The presenters of Linux Matters 🐧🎙️ are the creators of each of the
+principle Quickemu projects. We discussed Quickemu's 2024 reboot in
+[Episode 30 - Quickemu Rising From the
+Bashes](https://linuxmatters.sh/30).
+<!-- and in [Episode 32 - Quick, quicker, quickest](https://linuxmatters.sh/32) [Martin](https://github.com/flexiondotorg) unveils macOS host support for [**Quickemu**](https://github.com/quickemu-project/quickemu), [Mark](https://github.com/marxjohnson) explains the origins of the [**Quickgui**](https://github.com/quickemu-project/quickgui) desktop app and upcoming improvements, and [Alan](https://github.com/popey) debuts [**Quicktest**](https://github.com/quickemu-project/quicktest); a framework for automatically testing operating systems via Quickemu -->
+
+<div align="center">
+
+<a href="https://linuxmatters.sh" target="_blank"><img src="https://github.com/wimpysworld/nix-config/raw/main/.github/screenshots/linuxmatters.png" alt="Linux Matters Podcast"/></a>
+<br /> <em>Linux Matters Podcast</em>
+
+</div>
+
 When installing from source, you will need to install the following
 requirements manually:
 
@@ -213,7 +229,8 @@ requirements manually:
 - [python3](https://www.python.org/)
 - [mkisofs](http://cdrtools.sourceforge.net/private/cdrecord.html)
 - [usbutils](https://github.com/gregkh/usbutils)
-- [util-linux](https://github.com/karelzak/util-linux)
+- [util-linux](https://github.com/karelzak/util-linux); including
+  `uuidgen`
 - [sed](https://www.gnu.org/software/sed/)
 - [socat](http://www.dest-unreach.org/socat/)
 - [spicy](https://gitlab.freedesktop.org/spice/spice-gtk)
@@ -244,7 +261,7 @@ sudo apt-get install bash coreutils curl genisoimage grep jq mesa-utils ovmf pci
 #### Install requirements on Fedora hosts
 
 ``` shell
-sudo dnf install bash coreutils curl edk2-tools genisoimage grep jq mesa-demos pciutils procps python3 qemu sed socat spice-gtk-tools swtpm unzip usbutils util-linux xdg-user-dirs xrandr zsync
+sudo dnf install bash coreutils curl edk2-tools genisoimage grep jq mesa-demos pciutils procps python3 qemu sed socat spice-gtk-tools swtpm unzip usbutils util-linux uuidgen-runtime xdg-user-dirs xrandr zsync
 ```
 
 ### Install requirements on Gentoo
@@ -315,24 +332,6 @@ sudo apt install quickgui
 Many thanks to [Luke Wesley-Holley](https://github.com/Lukewh) and
 [Philipp Kiemle](https://github.com/daPhipz) for creating the
 **[Quickemu icons](https://github.com/Lukewh/quickemu-icons)** 🎨
-
-### qqX
-
-There is also a multi option desktop integrated text interface, the
-**quickemu quickget X terminal project**, or **qqX**, with lots of
-unique tools and utilities to help you make light work of installations,
-snapshots and disk management
-
-- **[qqX](https://github.com/TuxVinyards/qqX)** is independently curated
-  by [Alex Genovese](https://github.com/TuxVinyards) (see the github
-  pages)
-
-<figure>
-<img
-src="https://github.com/TuxVinyards/qqX/assets/3956806/18e5c495-8072-49a5-8b9c-e1302549efcf"
-alt="qqX-vmm" />
-<figcaption aria-hidden="true">qqX-vmm</figcaption>
-</figure>
 
 ## Creating Linux guests 🐧
 

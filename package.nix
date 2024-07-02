@@ -15,7 +15,8 @@
 , pciutils
 , procps
 , python3
-, qemu
+, qemu_full
+, samba
 , socat
 , spice-gtk
 , swtpm
@@ -27,13 +28,13 @@
 , zsync
 , OVMF
 , OVMFFull
+, quickemu
 }:
 let
   runtimePaths = [
     cdrtools
     curl
     gawk
-    glxinfo
     gnugrep
     gnused
     jq
@@ -41,20 +42,31 @@ let
     pciutils
     procps
     python3
-    qemu
+    qemu_full
+    samba
     socat
     swtpm
     unzip
-    usbutils
     util-linux
-    xdg-user-dirs
     xrandr
     zsync
+    OVMF
+    OVMFFull
+  ] ++ lib.optionals stdenv.isLinux [
+    glxinfo
+    usbutils
+    xdg-user-dirs
   ];
+  versionMatches =
+    builtins.match ''
+      .*
+      readonly[[:blank:]]VERSION="([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)"
+      .*
+    '' (builtins.readFile ./quickemu);
 in
-
 stdenv.mkDerivation rec {
   pname = "quickemu";
+  version = builtins.concatStringsSep "" versionMatches;
   src = lib.cleanSource ./.;
 
   postPatch = ''
@@ -85,10 +97,13 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  passthru.tests = testers.testVersion { package = quickemu; };
+
+  meta = {
     description = "Quickly create and run optimised Windows, macOS and Linux virtual machines";
     homepage = "https://github.com/quickemu-project/quickemu";
-    license = licenses.mit;
-    maintainers = with maintainers; [ fedx-sudo flexiondotorg ];
+    mainProgram = "quickemu";
+    license = lib.licenses.mit;
+    maintainers = with lib.maintainers; [ fedx-sudo flexiondotorg ];
   };
 }

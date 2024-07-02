@@ -199,7 +199,7 @@ function error_not_supported_release() {
 }
 
 function error_not_supported_edition() {
-    if [[ ! "${EDITIONS[*]}" =~ ${EDITION} ]]; then
+    if [[ ! "${EDITIONS[*]}" = *"${EDITION}"* ]]; then
         echo -e "ERROR! ${EDITION} is not a supported $(pretty_name "${OS}") edition\n"
         echo -n ' - Supported editions: '
         for EDITION in "${EDITIONS[@]}"; do
@@ -629,8 +629,11 @@ function releases_batocera() {
 }
 
 function releases_bazzite() {
-    #shellcheck disable=SC2046,SC2005
-    echo $(web_pipe "https://api.github.com/repos/ublue-os/bazzite/releases" | grep 'download_url' | grep 'sum' | cut -d '/' -f8 | cut -d'v' -f2 | head -n 5)
+    echo latest
+}
+
+function editions_bazzite() {
+    echo gnome kde
 }
 
 function releases_biglinux() {
@@ -719,7 +722,7 @@ function editions_debian() {
 
 function releases_deepin() {
     #shellcheck disable=SC2046,SC2005
-    echo $(web_pipe "https://cdimage.deepin.com/releases/" | grep "href=" | cut -d'"' -f2 | grep -v "\.\." | grep -v nightly | grep -v preview | sed 's|/||g' | tail -n 10 | sort -r)
+    echo $(web_pipe "https://mirrors.kernel.org/deepin-cd/" | grep "href=" | cut -d'"' -f2 | grep -v "\.\." | grep -v nightly | grep -v preview | sed 's|/||g' | tail -n 10 | sort -r)
 }
 
 function releases_devuan() {
@@ -774,7 +777,7 @@ function editions_fedora() {
 
 function releases_freebsd() {
     #shellcheck disable=SC2046,SC2005
-    echo $(web_pipe "https://download.freebsd.org/ftp/releases/amd64/amd64/ISO-IMAGES/" | grep -e 'class="link"' | grep -v '\.\.' | cut -d\" -f 4 | grep -v "14.1" | tr -d '/' | sort -r)
+    echo $(web_pipe "https://download.freebsd.org/ftp/releases/amd64/amd64/" | grep -Eo "href=\"[0-9\.]+-RELEASE" | grep -oE '[0-9\.]+' | sort -r)
 }
 
 function editions_freebsd() {
@@ -828,7 +831,7 @@ function editions_haiku() {
 }
 
 function releases_holoiso() {
-    web_pipe "https://github.com/HoloISO/releases/releases/latest" | grep -o -e 'releases/tag/[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]' | head -n 1 | cut -d'/' -f 3
+    echo "latest"
 }
 
 function releases_kali() {
@@ -884,7 +887,7 @@ function releases_manjaro() {
 }
 
 function releases_mxlinux() {
-    echo 23.2
+    echo 23.3
 }
 
 function editions_mxlinux() {
@@ -898,7 +901,7 @@ function releases_netboot() {
 function releases_netbsd() {
     # V8 is EOL so filter it out
     #shellcheck disable=SC2046,SC2005
-    echo $(web_pipe "http://cdn.netbsd.org/pub/NetBSD/iso/" | grep -o -E '"[[:digit:]]+\.[[:digit:]]+/"' | tr -d '"/' | grep -v ^8 | sort -nr)
+    echo $(web_pipe "http://cdn.netbsd.org/pub/NetBSD/iso/" | grep -o -E '"[[:digit:]]+\.[[:digit:]]+/"' | tr -d '"/' | grep -v ^8 | sort -nr | head -n 4)
 }
 
 function releases_nitrux() {
@@ -906,11 +909,13 @@ function releases_nitrux() {
 }
 
 function releases_nixos() {
-    echo unstable 23.11 23.05
+    # Lists unstable plus the two most recent releases
+    #shellcheck disable=SC2046
+    echo unstable $(web_pipe "https://nix-channels.s3.amazonaws.com/?delimiter=/" | grep -o -P '(?<=<Key>nixos-)[0-9]+.[0-9]+(?=</Key>)' | sort -nr | head -n +2)
 }
 
 function editions_nixos() {
-    echo minimal plasma5 gnome
+    echo minimal plasma gnome
 }
 
 function releases_nwg-shell() {
@@ -942,7 +947,8 @@ function releases_oraclelinux() {
 }
 
 function releases_parrotsec() {
-    echo 6.0 5.3
+    #shellcheck disable=SC2046,SC2005
+    echo $(web_pipe "https://download.parrot.sh/parrot/iso/" | grep -o -P '(?<=href=")[0-9].*(?=/")' | sort -nr | head -n 1)
 }
 
 function editions_parrotsec() {
@@ -1029,9 +1035,7 @@ function editions_slax() {
 }
 
 function releases_slint() {
-    # 15.0.1 returns a 404 so is excluded
-    #shellcheck disable=SC2046,SC2005
-    echo $(web_pipe "https://slackware.uk/slint/x86_64/" | grep "slint-" | cut -d'>' -f2 | cut -d'-' -f2 | tr -d "/\"" | grep -v "15.0.1" | sort -ru)
+    echo "15.0-5"
 }
 
 function releases_slitaz() {
@@ -1154,28 +1158,18 @@ function releases_vxlinux() {
 }
 
 function releases_windows() {
-    echo 11 10-ltsc 10 8
+    echo 11 10
 }
 
 function languages_windows() {
-    if [ "${RELEASE}" == 8 ]; then
-        I18NS=("Arabic" "Brazilian Portuguese" "Bulgarian" "Chinese (Simplified)" "Chinese (Traditional)" "Chinese (Traditional Hong Kong)" \
-        "Croatian" "Czech" "Danish" "Dutch" "English (United States)" "English International" "Estonian" "Finnish" "French" "German" "Greek" \
-        "Hebrew" "Hungarian" "Italian" "Japanese" "Latvian" "Lithuanian" "Norwegian" "Polish" "Portuguese" "Romanian" "Russian" "Serbian Latin" \
-        "Slovak" "Slovenian" "Spanish" "Swedish" "Thai" "Turkish" "Ukrainian")
-    elif [ "${RELEASE}" == "10-ltsc" ]; then
-        I18NS=("English (United States)" "English (Great Britain)" "Chinese (Simplified)" "Chinese (Traditional)" \
-        "French" "German" "Italian" "Japanese" "Korean" "Portuguese (Brazil)" "Spanish")
-    else
-        I18NS=("Arabic" "Brazilian Portuguese" "Bulgarian" "Chinese (Simplified)" "Chinese (Traditional)" "Croatian" "Czech" "Danish" "Dutch" \
-        "English (United States)" "English International" "Estonian" "Finnish" "French" "French Canadian" "German" "Greek" "Hebrew" "Hungarian" \
-        "Italian" "Japanese" "Korean" "Latvian" "Lithuanian" "Norwegian" "Polish" "Portuguese" "Romanian" "Russian" "Serbian Latin" "Slovak" \
-        "Slovenian" "Spanish" "Spanish (Mexico)" "Swedish" "Thai" "Turkish" "Ukrainian")
-    fi
+    I18NS=("Arabic" "Brazilian Portuguese" "Bulgarian" "Chinese (Simplified)" "Chinese (Traditional)" "Croatian" "Czech" "Danish" "Dutch" \
+    "English (United States)" "English International" "Estonian" "Finnish" "French" "French Canadian" "German" "Greek" "Hebrew" "Hungarian" \
+    "Italian" "Japanese" "Korean" "Latvian" "Lithuanian" "Norwegian" "Polish" "Portuguese" "Romanian" "Russian" "Serbian Latin" "Slovak" \
+    "Slovenian" "Spanish" "Spanish (Mexico)" "Swedish" "Thai" "Turkish" "Ukrainian")
 }
 
 function releases_windows-server() {
-    echo 2022 2019 2016 2012-r2
+    echo 2022 2019 2016
 }
 
 function languages_windows-server() {
@@ -1528,7 +1522,7 @@ EOF
         fi
 
         # Enable TPM for Windows 11
-        if [ "${OS}" == "windows" ] && [ "${RELEASE}" == 11 ] || [ "${OS}" == "windows-server" ] && [ "${RELEASE}" == "2022" ]; then
+        if [ "${OS}" == "windows" ] && [ "${RELEASE}" == "11" ] || [ "${OS}" == "windows-server" ] && [ "${RELEASE}" == "2022" ]; then
             echo "tpm=\"on\"" >> "${CONF_FILE}"
             echo "secureboot=\"off\"" >> "${CONF_FILE}"
         fi
@@ -1662,9 +1656,12 @@ function get_batocera() {
 function get_bazzite() {
     local HASH=""
     local ISO=""
-    local URL="https://github.com/ublue-os/bazzite/releases/download/v${RELEASE}"
-    ISO=$(web_pipe "https://api.github.com/repos/ublue-os/bazzite/releases" | grep 'download_url' | grep 'sum' | cut -d '"' -f4 | cut -d'.' -f1-5 | grep "${RELEASE}" | cut -d'/' -f9)
-    HASH=$(web_pipe "${URL}/${ISO}.sha256sum" | grep 'SHA256' | cut -d' ' -f4)
+    local URL="https://download.bazzite.gg"
+    case ${EDITION} in
+        gnome) ISO="bazzite-gnome-stable.iso";;
+        kde)  ISO="bazzite-stable.iso";;
+    esac
+    HASH=$(web_pipe "${URL}/${ISO}-CHECKSUM" | cut -d' ' -f1)
     echo "${URL}/${ISO} ${HASH}"
 }
 
@@ -1761,11 +1758,9 @@ function get_deepin() {
     local REV=${RELEASE}
     # deepin-desktop-community-20.3-amd64.iso
     local URL="https://cdimage.deepin.com/releases/"${RELEASE}
-    # fix iso name
-    if [[ "${RELEASE}" == *"20" ]] ; then
-        REV="1003"
-    elif [[ "${RELEASE}" == *"20.1" ]]; then
-        REV="1010"
+    # Correct URL for 23-RC onwards which has architecture directories
+    if [[ "${RELEASE}" == *"23-RC"* ]] ; then
+        URL+="/amd64"
     fi
     local ISO="deepin-desktop-community-${REV}-amd64.iso"
     HASH=$(web_pipe "${URL}/SHA256SUMS" | grep "${ISO}" | cut -d' ' -f1)
@@ -1958,6 +1953,7 @@ function get_haiku() {
 function get_holoiso() {
     local HASH=""
     local URL=""
+    RELEASE="$(web_pipe "https://github.com/HoloISO/releases/releases" | grep -o -e 'releases/tag/[[:digit:]]\+\(\.[[:digit:]]\+\)*' | head -n 1 | cut -d'/' -f 3)"
     URL=$(web_pipe "https://api.github.com/repos/HoloISO/releases/releases" | jq -r ".[] | select(.tag_name==\"${RELEASE}\") | .body" | sed -n 's/.*\(https:\/\/[^ ]*holoiso\.ru\.eu\.org\/[^ ]*\.iso\).*/\1/p' | head -n 1)
     echo "${URL} ${HASH}"
 }
@@ -2220,6 +2216,16 @@ function get_nitrux() {
 
 function get_nixos() {
     local HASH=""
+    # Adapt the plasma edition according to the NixOS release
+    case "${EDITION}" in
+        plasma)
+            if [ "${RELEASE}" == "23.11" ]; then
+                EDITION+="5"
+            else
+                EDITION+="6"
+            fi
+            ;;
+    esac
     local ISO="latest-nixos-${EDITION}-x86_64-linux.iso"
     local URL="https://channels.nixos.org/nixos-${RELEASE}"
     HASH=$(web_pipe "${URL}/${ISO}.sha256" | cut -d' ' -f1)
@@ -2431,9 +2437,10 @@ function get_slax() {
 
 function get_slint() {
     local HASH=""
-    local ISO=""
-    local URL="https://slackware.uk/slint/x86_64/slint-${RELEASE}/iso"
-    ISO=$(web_pipe "${URL}" | grep "slint64-" | cut -d'>' -f2 | cut -d'"' -f2 | head -n1)
+    local MAJ_VER=""
+    local ISO="slint64-${RELEASE}.iso"
+    MAJ_VER="$(echo "${RELEASE}" | cut -d'-' -f 1)"
+    local URL="https://slackware.uk/slint/x86_64/slint-${MAJ_VER}/iso"
     HASH=$(web_pipe "${URL}/${ISO}.sha256" | cut -d' ' -f4)
     echo "${URL}/${ISO}" "${HASH}"
 }
@@ -3028,8 +3035,6 @@ function download_windows_server() {
     local PRETTY_RELEASE=""
 
     case "${RELEASE}" in
-        "10-ltsc") PRETTY_RELEASE="10 LTSC";;
-        "2012-r2") PRETTY_RELEASE="2012 R2";;
         *) PRETTY_RELEASE="${RELEASE}";;
     esac
 
@@ -3143,12 +3148,12 @@ function download_windows_workstation() {
     # https://github.com/ElliotKillick/Mido
     # Download newer consumer Windows versions from behind gated Microsoft API
 
-    # Either 8, 10, or 11
+    # Either 10, or 11
     local windows_version="$1"
 
     local url="https://www.microsoft.com/en-us/software-download/windows$windows_version"
     case "$windows_version" in
-        8 | 10) url="${url}ISO";;
+        10) url="${url}ISO";;
     esac
 
     local user_agent="Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0"
@@ -3246,9 +3251,7 @@ function download_windows_workstation() {
 }
 
 function get_windows() {
-    if [ "${RELEASE}" == "10-ltsc" ]; then
-        download_windows_server windows-10-enterprise ltsc
-    elif [ "${OS}" == "windows-server" ]; then
+    if [ "${OS}" == "windows-server" ]; then
         download_windows_server "windows-server-${RELEASE}"
     else
         download_windows_workstation "${RELEASE}"
@@ -3482,8 +3485,6 @@ if [ -n "${2}" ]; then
     if [[ $(type -t "editions_${OS}") == function ]]; then
         validate_release "releases_${OS}"
         EDITIONS=("$(editions_"${OS}")")
-        # Default to the first edition if none is specified.
-        EDITION=${EDITIONS[0]}
         if [ -n "${3}" ]; then
             EDITION="${3}"
             error_not_supported_edition
@@ -3511,7 +3512,7 @@ if [ -n "${2}" ]; then
         "languages_${OS}"
         if [ -n "${3}" ]; then
             I18N="${3}"
-            if [[ ! "${I18NS[*]}" =~ ${I18N} ]]; then
+            if [[ ! "${I18NS[*]}" = *"${I18N}"* ]]; then
                 error_not_supported_lang
             fi
             VM_PATH="$(echo "${OS}-${RELEASE}-${I18N// /-}" | tr -d '()')"
